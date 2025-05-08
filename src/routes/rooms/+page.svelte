@@ -50,7 +50,6 @@
     let mediaSource: MediaSource;
     let sourceBuffer: SourceBuffer | null = null;
     let recorder: MediaRecorder | null = null;
-    let isAppending = false;
   
     onMount(async () => {
       try {
@@ -67,9 +66,7 @@
         setupVideo(mediaSource);
         setupRecorder(recorder);
       } 
-      catch (err) {
-        console.error("Error:", err);
-      }
+      catch (err) {}
     });
   
     function setupVideo(source: MediaSource) {
@@ -97,15 +94,19 @@
     }
 
     function appendToSourceBuffer(chunk: ArrayBuffer) {
-        if (!isAppending && mediaSource.readyState === 'open') {
-            isAppending = true;
-            sourceBuffer?.appendBuffer(chunk);
-            
-            sourceBuffer?.addEventListener('updateend', () => {
-            isAppending = false;
-            }, { once: true });
+
+        console.log("append", !sourceBuffer?.updating, mediaSource.readyState === 'open');
+
+        if (!sourceBuffer?.updating && mediaSource.readyState === 'open') {
+
+            try {
+                sourceBuffer?.appendBuffer(chunk);
+            } 
+            catch (error) {
+                console.log(error);    
+            }
         } else {
-            setTimeout(() => appendToSourceBuffer(chunk), 100);
+            setTimeout(() => appendToSourceBuffer(chunk), delay / 2);
         }
     }
 </script>

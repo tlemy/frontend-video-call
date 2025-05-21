@@ -1,5 +1,6 @@
 const timeslice = 50;
 const interval = 500;
+const delayMax = 0.5;
 
 class UserStream {
     constructor(_mediaSource: MediaSource, _sourceBuffer: SourceBuffer | null, _recorder: MediaRecorder, _mimeType: string)
@@ -38,9 +39,10 @@ class UserStream {
             const current = this.device?.currentTime;
             const diff = seekable - current;
 
-            if (diff > 0.3 || this.isPause)
+            if (diff > delayMax || this.isPause)
             {
                 this.device.currentTime = seekable;
+                console.log(diff);
             }
         }
     }

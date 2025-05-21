@@ -30,12 +30,11 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        background-color: b;
     }
 
     .controls {
         width: 1;
-        height: 4em;
+        height: 4rem;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -44,19 +43,19 @@
 
     .control {
         width: 30%;
-        height: 5em;
-        border-radius: 1em;
+        height: 3.5rem;
+        border-radius: 1rem;
     }
 
     #others {
-        height: 65em;
-        width: 105em;
-        border-radius: 0em;
+        height: 65rem;
+        width: 100%;
+        border-radius: 0rem;
         background-color: black;
     }
 
     #self {
-        margin-top: 1em;
+        margin-top: 1rem;
     } 
 
     #quit-button {
@@ -64,15 +63,15 @@
     }
 
     #no-camera {
-        width: 15em;
-        height: 11em;
+        width: 15rem;
+        height: 11rem;
         background-color: black;
-        margin-bottom: 0.3em;
+        margin-bottom: 0.3rem;
     }
 
     video {
-        width: 15em;
-        height: 11em;
+        width: 15rem;
+        height: 11rem;
     }
 </style>
 

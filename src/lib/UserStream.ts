@@ -1,6 +1,4 @@
 const timeslice = 50;
-const interval = 500;
-const delayMax = 0.5;
 
 class UserStream {
     constructor(_mediaSource: MediaSource, _sourceBuffer: SourceBuffer | null, _recorder: MediaRecorder, _mimeType: string)
@@ -28,6 +26,7 @@ class UserStream {
             }
         }
         this.recorder.start(timeslice);
+        this.setLiveWhenTabSwitchBack();
     }
     
     setLive()
@@ -36,29 +35,20 @@ class UserStream {
 
         if (this.device && seekable && seekable > 0)
         {
-            const current = this.device?.currentTime;
-            const diff = seekable - current;
-
-            if (diff > delayMax || this.isPause)
-            {
-                this.device.currentTime = seekable;
-                console.log(diff);
-            }
+            this.device.currentTime = seekable;
         }
     }
 
-    setupBufferCleaner()
+    setLiveWhenTabSwitchBack()
     {
-        this.intervalId = setInterval(() => {
-            try 
-            {   
-                this.setLive();
-            }
-            catch (err)
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden)
             {
-                console.log(err);
+                 setTimeout(() => {
+                     this.setLive();
+                 }, timeslice); 
             }
-        }, interval);
+         });
     }
 
     appendToSourceBuffer(chunk: ArrayBuffer)
@@ -83,7 +73,7 @@ class UserStream {
 
             setTimeout(() => {
                 this.appendToSourceBuffer(chunk)
-            }, interval / 2);
+            }, timeslice);
         }
     }
 
@@ -107,12 +97,14 @@ class UserStream {
     {
         this.isPause = true;
         this.recorder.pause();
+        this.setLive();
     }
 
     resumeStream()
     {
         this.isPause = false;
         this.recorder.resume();
+        this.setLive();
     }
 }
 
@@ -125,8 +117,6 @@ export class UserVideoStream extends UserStream
         this.device = document.querySelector('#camera') as HTMLVideoElement;
         this.device.src = URL.createObjectURL(this.mediaSource);
         this.device.play().catch((err) => {});
-
-        this.setupBufferCleaner();
     }
 
     init()
@@ -157,8 +147,6 @@ export class UserAudioStream extends UserStream
         this.device = document.querySelector('#microphone') as HTMLAudioElement;
         this.device.src = URL.createObjectURL(this.mediaSource);
         this.device.play().catch((err) => {});
-
-        this.setupBufferCleaner();
     }
 
     init()
@@ -179,4 +167,3 @@ export class UserAudioStream extends UserStream
         }
     }
 }
-
